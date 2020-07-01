@@ -222,7 +222,7 @@ if __name__ == '__main__':
 	main()
 
 '''
-improvemenmt of the program
+improvement of the program:
 
 make the whole program a class so that we can have a option to change the range of the random colour to guess
 
@@ -230,6 +230,5 @@ add a leaderboard feature
 
 prompt the user to enter a name for leaderboard purposes
 
-
-
+make gui for the program
 '''
