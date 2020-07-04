@@ -1,6 +1,15 @@
+'''
+A mastermind game
+made by Kelvin Ho Chu Gen 19026111
+BSc(Hons) Computer Science
+
+'''
 import random
+
+#A function to restart the program 
 def main():
 
+	#combine the inputs into a list
 	def Input2List(userInput1, userInput2, userInput3, userInput4):
 		
 		'''cant directly initialize userChoiceList = [userInput1, userInput2, userInput3, userInput4] becuase of the logic statement, 
@@ -8,6 +17,7 @@ def main():
 		userChoicesList = [userInput1, userInput2, userInput3, userInput4]
 		return userChoicesList
 		
+	#user input
 	def UserInput(Result):
 
 		#if the user guess the colour correctly, remove the question
@@ -40,6 +50,7 @@ def main():
 		print(f'Your choices are [{userChoices}]' )
 		return userChoicesList    
 
+	#to validate the result and print msg to notify the user if they guess it right (easy mode only)
 	def Validator(Result):
 		#display which oder of colour is guessed correctly(only for easy mode)
 		if Result[0] == True:
@@ -52,6 +63,7 @@ def main():
 			print('Your guess on the fourth colour is correct!')
 		
 
+	#Calculation for correct colour but wrong position's guesses
 	def CCWPCalculation(randomColourChoices, userChoicesList, result):
 		#create a temporary list for the random colour list
 		tempList = randomColourChoices[:]
@@ -61,7 +73,7 @@ def main():
 		#check if the colour is in both list
 		for i in userChoicesList:
 			if i in tempList:
-				tempList.remove(i) #remove the colour from the random colour list so that it wont be checked mroe than once
+				tempList.remove(i) #remove the colour from the random colour list so that it wont be checked more than once
 				correctColourWrongPos += 1
 		correctColourWrongPos -= sum(result) #minus the correct colour and position
 		return correctColourWrongPos
@@ -74,16 +86,27 @@ def main():
 		correctColourWrongPos = CCWPCalculation(userChoicesList, randomColourChoices, result)
 		print(f'Correct colour but wrong position: {correctColourWrongPos}')
 		print(f'Correct colour in correct position: {correctColourNPosition}')
-		Validator(result)
 		return result
 
+	#This function is called when the user guessed all four question and will print msg to user when they won and if not,it will ask them if they want to retry
+	def GameOver(result):
+		if sum(result) == len(randomColourChoices):
+				print('Congratulation! you have guessed all the colour right')
+				main()
+		else:
+			retry = input('Do you wanna try again? [Yes/No]: ')
+			if retry.lower() == 'no':
+				print(f'Too bad you did not got it right, the correct guesses are [{randomColourChoices}]')
+				main()
+
+	#Hard mode
 	def Hard():
 
 		retry = 'yes'
 		tries = 0
 		result = [False, False, False, False]
 
-		while sum(result) != 4 and retry == 'yes':
+		while sum(result) != len(randomColourChoices) and retry == 'yes':
 			#tries increase by 1 every time the user retries
 			tries += 1
 			
@@ -97,71 +120,49 @@ def main():
 			userInput4 = input('Please choose the fourth colour: ')
 
 			userChoicesList = [userInput1, userInput2, userInput3, userInput4]
-
-			result = [i == j for i, j in zip(userChoicesList, randomColourChoices)]
-
-			userChoices = ', '.join([colour.lower() for colour in userChoicesList])
-			print(f'Your choices are [{userChoices}]' )
-
-			correctColourNPosition = sum(result)
-
-			correctColourWrongPos = CCWPCalculation(userChoicesList, randomColourChoices, result)
-
+			ChoicesDisplay(userChoicesList)
+			result = Guess(userChoicesList)
 			#print(correctColourWrongPos) #debugging purposes
-
-			print(f'Correct colour but wrong position: {correctColourWrongPos}')
-
-			print(f'Correct colour in correct position: {correctColourNPosition}')
-
 			print(f'Number of Tries: {tries}')     
+			GameOver(result)
+			
 
-			if sum(result) == len(randomColourChoices):
-				print('Congratulation! you have guessed all the colour right')
-				main()
-			else:
-				retry = input('Do you wanna try again? [Yes/No]: ')
-				if retry.lower() == 'no':
-					print(f'Too bad you did not got it right, the correct guesses are [{randomColourChoices}]')
-					main()
-
+	#Easy mode
 	def Easy():
 
 		retry = 'yes'
 		tries = 0
 		result = [False, False, False, False]
 
-		while sum(result) != 4 and retry == 'yes':
+		while sum(result) != len(randomColourChoices) and retry == 'yes':
 			#tries increase by 1 every time the user retries
 			tries += 1
 			userChoicesList = UserInput(result)
 			ChoicesDisplay(userChoicesList)
 			result = Guess(userChoicesList)
-			print('Number of Tries: ' + str(tries))	#display the total of tries	
+			Validator(result)
+			print(f'Number of Tries: {tries}')	#display the total of tries	
+			GameOver(result)
 
-			if sum(result) == len(randomColourChoices):
-				#congratz the user and restart the program by going back to the main menu
-				print('Congratulation! you have guessed all the colour right')
-				main()
-			else:
-				retry = input('Do you wanna try again? [Yes/No]: ')
-				if retry.lower() == 'no':
-					print(f'Too bad you did not got it right, the correct guesses are [{randomColourChoices}]')
-					main()
-
+	#Help menu
 	def Help():
 
 		#explaination of the game for the user
-		helpMenu = input('-----------------Help Menu------------------\n/obj\n/typo\n/diff\n/menu (run this command to go back to the main menu)\nPlease enter the following commands\n')
+		helpMenu = input('-----------------Help Menu------------------\n/obj\n/typo\n/diff\n/menu (run this command to go back to the main menu)\n'
+						 '\nPlease enter the following commands: ')
 		if helpMenu.lower() == '/obj':
-			print('Objective of the game: \nGuess a secret code of colour consisting of a series of 4 colours.\nEach guess results in feedback narrowing down the possiblities of the code')
+			print('Objective of the game: \nPlayer would need to guess the correct sequences code of colours with the information provided after each guesses.'
+				  'Player should also aim for the least amount of tries to get the right guess')
 			Help()
 
 		if helpMenu.lower() == '/typo':
-			print('When the system display commands with "/", please include it in the input.\nOtherwise just type as the system shows, unless when guessing the colour which must input the first letter of the colour')
+			print('When the system display commands with "/", please include it in the input.'
+				  'Otherwise just type as the system shows, unless when guessing the colour which must input the first letter of the colour')
 			Help()
 
 		if helpMenu.lower() == '/diff':
-			print('Easy mode will display a message when a guess is correct and permenantly remove the question for that round of guesses.\nHard mode will only tells the number of correct colour but wrong position guesses and correct colour and position guess')
+			print('Easy mode will display a message when a guess is correct and permenantly remove the question for that round of guesses.'
+				  'Hard mode will only tells the number of correct colour but wrong position guesses and correct colour and position guess')
 			Help()
 
 		if helpMenu.lower() == '/menu':
@@ -171,16 +172,18 @@ def main():
 			print('There might be some typing errors, try including the symbol "/" ')
 			Help()
 
+	#display error message to user when exception/typo happens
 	def error():
 
 		#if there is typo, note the user and restart the program
 		print('There might be some typing errors, try including the symbol "/" ')
 		main() #restart the program
 
+	#to prompt the user to choose a difficulty to play with
 	def Difficulty():
 
 		#prompt user to choose a difficulty
-		difficulty = input('-----------------Difficulty------------------\nPlease select a difficulty\nEasy\nHard\n\nDifficulty: ')
+		difficulty = input('-----------------Difficulty------------------\nPlease select a difficulty\nEasy\nHard (recommended)\n\nDifficulty: ')
 
 		print('Four random colour sequence with replacement is generated...')
 
@@ -196,8 +199,10 @@ def main():
 			Hard()
 		
 		else:
-			error()
+			print('There might be some typing errors')
+			main()
 
+	#Main Menu
 	mainMenu = input('-----------------Main Menu------------------\n/play\n/help (recommended if first time playing)\n/exit\n\nPlease enter the following commands: ')
 
 	if mainMenu.lower() == '/play':
@@ -218,8 +223,7 @@ def main():
 		error()
 
 #run the main function
-if __name__ == '__main__':
-	main()
+main()
 
 '''
 improvement of the program:
@@ -231,4 +235,6 @@ add a leaderboard feature
 prompt the user to enter a name for leaderboard purposes
 
 make gui for the program
+
+for loop for function UserInput and Validator
 '''
